@@ -1042,7 +1042,7 @@ def parse_args(parser, args, enforce_requires=True):
             not (options.preauthtoken and options.preauthurl):
         exit('''
 Auth version 1.0 requires ST_AUTH, ST_USER, and ST_KEY environment variables
-to be set or overridden with -A, -U, or -K. Otherwise you can precise Pre-auth
+to be set or overridden with -A, -U, or -K. Otherwise you can precise pre-auth
 token and URL using --preauthtoken and --preauthurl.
 
 Auth version 2.0 requires OS_AUTH_URL, OS_USERNAME, OS_PASSWORD, and
@@ -1169,8 +1169,16 @@ Example:
                            'be verified. '
                            'Defaults to env[SWIFTCLIENT_INSECURE] '
                            '(set to \'true\' to enable).')
-    parser.add_option('--preauthtoken', help='Use as pre-auth token', metavar='<pre-auth-token>')
-    parser.add_option('--preauthurl', help='Use as pre-auth URL', metavar='<pre-auth-url>')
+    parser.add_option('--preauthtoken',
+                      metavar='<pre-auth-token>',
+                      default=environ.get('PRE_AUTH_TOKEN'),
+                      help='Use as pre-auth token. '
+                           'Defaults to env[PRE_AUTH_TOKEN]')
+    parser.add_option('--preauthurl',
+                      metavar='<pre-auth-url>',
+                      default=environ.get('PRE_AUTH_URL'),
+                      help='Use as pre-auth URL. '
+                           'Defaults to env[PRE_AUTH_URL]')
     parser.disable_interspersed_args()
     (options, args) = parse_args(parser, argv[1:], enforce_requires=False)
     parser.enable_interspersed_args()
