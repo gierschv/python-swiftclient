@@ -44,7 +44,9 @@ def get_conn(options):
                       os_options=options.os_options,
                       snet=options.snet,
                       cacert=options.os_cacert,
-                      insecure=options.insecure)
+                      insecure=options.insecure,
+                      preauthurl=options.preauthurl,
+                      preauthtoken=options.preauthtoken)
 
 
 def mkdirs(path):
@@ -1036,10 +1038,12 @@ def parse_args(parser, args, enforce_requires=True):
     }
 
     if enforce_requires and \
-            not (options.auth and options.user and options.key):
+            not (options.auth and options.user and options.key) and \
+            not (options.preauthtoken and options.preauthurl):
         exit('''
 Auth version 1.0 requires ST_AUTH, ST_USER, and ST_KEY environment variables
-to be set or overridden with -A, -U, or -K.
+to be set or overridden with -A, -U, or -K. Otherwise you can precise Pre-auth
+token and URL using --preauthtoken and --preauthurl.
 
 Auth version 2.0 requires OS_AUTH_URL, OS_USERNAME, OS_PASSWORD, and
 OS_TENANT_NAME OS_TENANT_ID to be set or overridden with --os-auth-url,
@@ -1165,6 +1169,8 @@ Example:
                            'be verified. '
                            'Defaults to env[SWIFTCLIENT_INSECURE] '
                            '(set to \'true\' to enable).')
+    parser.add_option('--preauthtoken', help='Use as pre-auth token', metavar='<pre-auth-token>')
+    parser.add_option('--preauthurl', help='Use as pre-auth URL', metavar='<pre-auth-url>')
     parser.disable_interspersed_args()
     (options, args) = parse_args(parser, argv[1:], enforce_requires=False)
     parser.enable_interspersed_args()
