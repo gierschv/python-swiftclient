@@ -32,9 +32,12 @@ class MoonshotNegotiation(object):
         self.strNegotiation = ''
 
     def negotiation(self):
+        gss_flags = moonshot.GSS_C_MUTUAL_FLAG | moonshot.GSS_C_INTEG_FLAG | \
+            moonshot.GSS_C_SEQUENCE_FLAG | moonshot.GSS_C_REPLAY_FLAG | \
+            moonshot.GSS_C_CONF_FLAG
         result, self.context = moonshot.authGSSClientInit(
             self.serviceName,
-            moonshot.GSS_C_MUTUAL_FLAG | moonshot.GSS_C_SEQUENCE_FLAG,
+            gss_flags,
             self.mechanism)
             #moonshot.GSS_SPNEGO)
 
