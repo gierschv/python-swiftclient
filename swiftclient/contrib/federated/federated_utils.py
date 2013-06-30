@@ -64,13 +64,13 @@ def selectProvider(providerList):
     while choice is None:
         try:
             choice = int(raw_input(
-                'Enter the number corresponding to the service you want to use:'
+                'Enter the number corresponding to the service you want to use: '
             ))
         except:
             print 'An error occurred with your selection'
         if choice < 0 or choice >= len(providerList):
             print 'The selection made was not a valid choice of service'
-        choice = None
+            choice = None
     return providerList[choice]['service']
 
 
