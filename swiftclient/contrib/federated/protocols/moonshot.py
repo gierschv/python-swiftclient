@@ -5,12 +5,12 @@ import copy
 import json
 import urllib3
 import logging
-import moonshot
+import pymoonshot as moonshot
 from swiftclient.contrib.federated import federated_exceptions, federated_utils
 
 LOG = logging.getLogger('swiftclient')
 LOG.addHandler(logging.StreamHandler())
-LOG.setLevel(logging.DEBUG)
+LOG.setLevel(logging.INFO)
 
 
 class MoonshotException(Exception):
@@ -67,8 +67,6 @@ class MoonshotNegotiation(object):
         # Send request only if the challenge is not empty (end of negotiation)
         if strNegotiation is not None:
             response = self.negotiationRequest(strNegotiation)
-            print response
-
             if 'error' in response and 'identity' in response['error']:
                 response = response['error']['identity']['federated']
             self.cid = response['cid']

@@ -28,36 +28,35 @@ def middlewareRequest(
     return response
 
 
-## Displays the list of tenants to the user so he can choose one
-def selectTenant(tenantsList, serverName=None):
+## Displays the list of projects to the user so he can choose one
+def selectProject(projectList, serverName=None):
     if not serverName:
-        print 'You have access to the following tenant(s):'
+        print 'You have access to the following projects(s):'
     else:
-        print 'You have access to the following tenant(s) on '+serverName+':'
-    for idx, tenant in enumerate(tenantsList):
-        print '\t{', idx, '} ', tenant['project']['description']
+        print 'You have access to the following projects(s) on '+serverName+':'
+    for idx, project in enumerate(projectList):
+        print '\t{', idx, '} ', project['description']
     chosen = False
     choice = None
     while not chosen:
         try:
             choice = int(raw_input(
-                'Enter the number corresponding to the tenant you want to use:'
+                'Enter the number corresponding to the project you want to use: '
             ))
         except:
             print 'An error occurred with your selection'
         if not choice is None:
-            if choice < 0 or choice >= len(tenantsList):
+            if choice < 0 or choice >= len(projectList):
                 chosen = False
-            print 'The selection made was not a valid choice of tenant'
-        else:
-            chosen = True
-    return tenantsList[choice]
+                print 'The selection made was not a valid choice of project'
+            else:
+                chosen = True
+    return projectList[choice]
 
 
 ## Displays the list of realm to the user
 def selectProvider(providerList):
     print 'Please use one of the following services to authenticate you:'
-    print providerList
     for idx, provider in enumerate(providerList):
         print '\t{', idx, '} ', provider['service']['name']
     choice = None

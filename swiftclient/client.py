@@ -266,21 +266,22 @@ def _get_auth_federated(url, realm, tenant_name):
     if federated_endpoint is not None and federated_token_id is not None:
         return federated_endpoint, federated_token_id
     try:
-        body = federated.federatedAuthentication(url, realm, tenant_name)
+        scopeDetails, scopedToken = federated.federatedAuthentication(url, realm, tenant_name)
         url = None
-        catalogs = body['access']['serviceCatalog']
+        catalogs = scopeDetails['token']['catalog']
         for service in catalogs:
             if service['type'] == 'object-store':
-                url = service['endpoints'][0]['publicURL']
-        token_id = body['access']['token']['id']
+                for endpoint in service['endpoints']:
+                    if endpoint['interface'] == 'public':
+                        url = endpoint['url']
         if not url:
             raise ClientException("There is no object-store endpoint "
                                   "on this auth server.")        
     except ClientException as ce:
         raise ClientException("Error while getting answers from auth server")
-    federated_token_id = token_id
+    federated_token_id = scopedToken
     federated_endpoint = url
-    return url, token_id
+    return url, scopedToken
 
 def get_auth(url, user, key, snet=False, tenant_name=None, auth_version="1.0", realm=None):
     """

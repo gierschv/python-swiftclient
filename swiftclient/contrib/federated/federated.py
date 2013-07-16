@@ -37,19 +37,13 @@ def federatedAuthentication(keystoneEndpoint, realm=None, tenantFn=None):
         keystoneEndpoint, unscopedDetails['token']['user']['id'], unscopedToken
     )
 
-    # TODO
+    # Scope token
+    project = futils.selectProject(projects['projects'])
+    scopeDetails, scopedToken = getScopedToken(
+        keystoneEndpoint, unscopedToken, project
+    )
 
-    # tenantData = getUnscopedToken(
-    #    keystoneEndpoint, response, requestPool, realm
-    #)
-    # tenant = futils.getTenantId(tenantData['tenants'], tenantFn)
-    # if tenant is None:
-    #     tenant = futils.selectTenant(tenantData['tenants'])['project']['id']
-    # scopedToken = swapTokens(
-    #    keystoneEndpoint, tenantData['unscopedToken'], tenant
-    #)
-
-    return scopedToken
+    return scopeDetails, scopedToken
 
 
 def load_protocol_module(protocol):
@@ -143,3 +137,26 @@ def getUserProject(keystoneEndpoint, user, unscopedToken):
         headers={'X-Auth-Token': unscopedToken}
     )
     return json.loads(resp.data)
+
+def getScopedToken(keystoneEndpoint, unscopedToken, project):
+    data = {
+        'auth': {
+            'identity': {
+                'methods': ['token'],
+                'token': {
+                    'id': unscopedToken
+                }
+            },
+            'scope': {
+                'project': {
+                    'id': project['id']
+                }
+            }
+        }
+    }
+
+    resp = futils.middlewareRequest(
+        keystoneEndpoint + 'auth/tokens', data, 'POST'
+    )
+
+    return json.loads(resp.data), resp.headers['x-subject-token']
