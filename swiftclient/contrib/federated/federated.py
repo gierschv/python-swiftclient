@@ -94,7 +94,8 @@ def requestIssuing(keystoneEndpoint, protocol, protocol_id):
     resp = futils.middlewareRequest(
         keystoneEndpoint + 'auth/tokens', data, 'POST'
     )
-    return json.loads(resp.data)['error']['identity']['federated']
+    return json.loads(resp.data) \
+        ['error']['identity']['federated']['protocol_data']
 
 
 ## Get the unscoped token
@@ -115,8 +116,10 @@ def getUnscopedToken(
                     'protocol': protocol,
                     'provider_id': protocol_id,
                     'phase': 'validate',
-                    'assertion': assertion,
-                    'cid': cid
+                    'protocol_data': {
+                        'assertion': assertion,
+                        'cid': cid
+                    }
                 }
             }
         }

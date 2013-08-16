@@ -10,7 +10,7 @@ from swiftclient.contrib.federated import federated_exceptions, federated_utils
 
 LOG = logging.getLogger('swiftclient')
 LOG.addHandler(logging.StreamHandler())
-LOG.setLevel(logging.INFO)
+LOG.setLevel(logging.DEBUG)
 
 
 class MoonshotException(Exception):
@@ -69,8 +69,8 @@ class MoonshotNegotiation(object):
             response = self.negotiationRequest(strNegotiation)
             if 'error' in response and 'identity' in response['error']:
                 response = response['error']['identity']['federated']
-            self.cid = response['cid']
-            self.strNegotiation = response['negotiation']
+            self.cid = response['protocol_data']['cid']
+            self.strNegotiation = response['protocol_data']['negotiation']
             LOG.debug('response: %r', json.dumps(self.strNegotiation))
         LOG.debug('authGSSClientStep: %d', result)
         return result
@@ -85,8 +85,10 @@ class MoonshotNegotiation(object):
                         'protocol': self.protocol,
                         'provider_id': self.protocol_id,
                         'phase': 'negotiate',
-                        'cid': self.cid,
-                        'negotiation': body
+                        'protocol_data': {
+                            'cid': self.cid,
+                            'negotiation': body
+                        }
                     }
                 }
             }
@@ -106,7 +108,7 @@ def getIdPResponse(
 ):
     m = MoonshotNegotiation(
         keystoneEndpoint,
-        moonshotDetail['serviceName'], moonshotDetail['mechanism'],
+        moonshotDetail['service_name'], moonshotDetail['mechanism'],
         requestPool, protocol, protocol_id
     )
     return m.negotiation()
